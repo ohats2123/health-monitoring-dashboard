@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Monitoring Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f9; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin-bottom: 20px; }
+        .card h2 { font-size: 24px; }
+        .card p { font-size: 18px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="card">
+            <h2>Heart Rate</h2>
+            <p id="bpm">Loading...</p>
+        </div>
+
+        <div class="card">
+            <h2>SpO2</h2>
+            <p id="spo2">Loading...</p>
+        </div>
+
+        <div class="card">
+            <h2>Temperature</h2>
+            <p id="temperature">Loading...</p>
+        </div>
+    </div>
+
+    <script>
+        // Blynk API URL
+        const BLYNK_AUTH_TOKEN = "your-blynk-auth-token";  // Thay thế bằng token của bạn
+        const BLYNK_URL = `http://blynk-cloud.com/${BLYNK_AUTH_TOKEN}/get/`;
+
+        // Fetch data from Blynk
+        function fetchBlynkData(pin) {
+            return fetch(BLYNK_URL + pin)
+                .then(response => response.json())
+                .then(data => data[0]);
+        }
+
+        // Update the values on the page
+        function updateValues() {
+            fetchBlynkData("V1")  // BPM data from Virtual Pin 1
+                .then(data => {
+                    document.getElementById("bpm").innerText = data + " bpm";
+                });
+
+            fetchBlynkData("V2")  // SpO2 data from Virtual Pin 2
+                .then(data => {
+                    document.getElementById("spo2").innerText = data + " %";
+                });
+
+            fetchBlynkData("V3")  // Temperature data from Virtual Pin 3
+                .then(data => {
+                    document.getElementById("temperature").innerText = data + " °C";
+                });
+        }
+
+        // Update every 5 seconds
+        setInterval(updateValues, 5000);
+        updateValues();  // Initial load
+    </script>
+
+</body>
+</html>
