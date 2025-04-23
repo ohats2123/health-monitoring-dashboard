@@ -1,7 +1,7 @@
 // Configuration
 const BLYNK_AUTH_TOKEN = "pPXiGs0km6L8evbBrsdcO__OwabZGFbD"; // Your Blynk auth token
-const BLYNK_SERVER = "blynk-cloud.com";
-const BLYNK_URL = `https://${BLYNK_SERVER}/${BLYNK_AUTH_TOKEN}/get/`;
+const BLYNK_SERVER = "blynk.cloud";
+const BLYNK_URL = `https://${BLYNK_SERVER}/external/api/get?token=${BLYNK_AUTH_TOKEN}&pin=`;
 
 // Mobile detection
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -453,17 +453,18 @@ async function fetchBlynkData(pin) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
         
-        const data = await response.json();
+        const data = await response.text();
+        const parsed = parseFloat(data);
         
         // Cache the result on mobile
         if (isMobile) {
             apiCache[pin] = {
-                data: data[0],
+                data: isNaN(parsed) ? null : parsed,
                 timestamp: Date.now()
             };
         }
         
-        return data[0];
+        return isNaN(parsed) ? null : parsed;
     } catch (error) {
         console.error(`Error fetching data from pin ${pin}:`, error);
         return null;
