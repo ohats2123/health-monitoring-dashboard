@@ -170,6 +170,48 @@ header h1 {
     color: #ffcc00;
 }
 
+.card.inactive {
+    opacity: 0.7;
+    filter: grayscale(0.7);
+}
+
+.card.inactive .value {
+    color: #888888;
+}
+
+.card.inactive .card-icon {
+    box-shadow: none;
+    background: linear-gradient(45deg, #888, #aaa) !important;
+}
+
+.card.no-data {
+    opacity: 0.6;
+    background: rgba(30, 30, 30, 0.15);
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+}
+
+.card.no-data .card-icon {
+    box-shadow: none;
+    background: linear-gradient(45deg, #444, #666) !important;
+}
+
+.card.no-data .value {
+    color: #666;
+    position: relative;
+}
+
+.card.no-data .value::before {
+    content: "---";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .alert-badge {
     position: absolute;
     top: 10px;
@@ -190,10 +232,20 @@ header h1 {
     z-index: 5;
 }
 
-.card.danger .alert-badge {
+.card.danger .alert-badge, .card.inactive .alert-badge, .card.no-data .alert-badge {
     opacity: 1;
     transform: scale(1);
     animation: bounceIn 0.5s;
+}
+
+.card.inactive .alert-badge {
+    background: #666;
+    content: "!";
+}
+
+.card.no-data .alert-badge {
+    background: #444;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .alert-message {
@@ -209,7 +261,7 @@ header h1 {
     transition: all 0.3s;
 }
 
-.card.danger .alert-message, .card.warning .alert-message {
+.card.danger .alert-message, .card.warning .alert-message, .card.inactive .alert-message, .card.no-data .alert-message {
     opacity: 1;
     height: auto;
     padding: 8px 12px;
@@ -219,6 +271,16 @@ header h1 {
 .card.warning .alert-message {
     background: rgba(255, 204, 0, 0.1);
     border-left: 4px solid #ffcc00;
+}
+
+.card.inactive .alert-message {
+    background: rgba(100, 100, 100, 0.1);
+    border-left: 4px solid #888;
+}
+
+.card.no-data .alert-message {
+    background: rgba(50, 50, 50, 0.15);
+    border-left: 4px solid #444;
 }
 
 /* Chart Styles */

@@ -6,6 +6,31 @@ const BLYNK_URL = `https://${BLYNK_SERVER}/${BLYNK_AUTH_TOKEN}/get/`;
 // Mobile detection
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
+// Connection status tracking
+let connectionEstablished = false;
+
+// Zero value tracking to detect unused devices
+const zeroValueTracking = {
+    heartRate: {
+        count: 0,
+        threshold: 5, // Number of consecutive zeros to consider device unused
+        isActive: true,
+        hasReceivedData: false
+    },
+    spo2: {
+        count: 0,
+        threshold: 5,
+        isActive: true,
+        hasReceivedData: false
+    },
+    temperature: {
+        count: 0,
+        threshold: 5,
+        isActive: true,
+        hasReceivedData: false
+    }
+};
+
 // Data mapping
 const dataConfig = {
     heartRate: {
@@ -23,7 +48,9 @@ const dataConfig = {
         unit: "BPM",
         alertMessage: {
             high: "Heart rate is too high! Check patient status.",
-            low: "Heart rate is too low! Check patient status."
+            low: "Heart rate is too low! Check patient status.",
+            unused: "Heart rate sensor not detecting a user. Please check device placement.",
+            noData: "No data received from heart rate sensor. Check connection."
         }
     },
     spo2: {
@@ -41,7 +68,9 @@ const dataConfig = {
         unit: "%",
         alertMessage: {
             high: "Abnormal SpO2 reading!",
-            low: "DANGER: Low oxygen levels! Immediate attention required."
+            low: "DANGER: Low oxygen levels! Immediate attention required.",
+            unused: "SpO2 sensor not detecting a user. Please check device placement.",
+            noData: "No data received from SpO2 sensor. Check connection."
         }
     },
     temperature: {
@@ -59,7 +88,9 @@ const dataConfig = {
         unit: "°C",
         alertMessage: {
             high: "High fever detected! Medical attention recommended.",
-            low: "Body temperature too low! Check patient status."
+            low: "Body temperature too low! Check patient status.",
+            unused: "Temperature sensor not detecting a user. Please check device placement.",
+            noData: "No data received from temperature sensor. Check connection."
         }
     }
 };
@@ -93,6 +124,11 @@ document.addEventListener("DOMContentLoaded", () => {
     setupTabButtons();
     setupCardInteractions();
     setupAlertSound();
+    
+    // Initial setup state
+    showNoDataState();
+    
+    // First data fetch attempt
     fetchData();
 
     // Fetch data every 5 seconds (slightly longer on mobile)
@@ -313,30 +349,79 @@ function setupTabButtons() {
     });
 }
 
+// Set initial no-data state
+function showNoDataState() {
+    Object.keys(dataConfig).forEach(key => {
+        const config = dataConfig[key];
+        const cardElement = document.querySelector(`.${key === "heartRate" ? "heart-rate" : key === "spo2" ? "oxygen" : "temperature"}`);
+        const alertElement = document.getElementById(config.alertElement);
+        
+        // Show no-data message
+        cardElement.classList.add('no-data');
+        alertElement.textContent = config.alertMessage.noData;
+    });
+}
+
 // Fetch data from Blynk API with debounce for mobile
 let isFetching = false;
+let consecutiveFailures = 0;
 async function fetchData() {
     if (isFetching) return;
     isFetching = true;
     
     try {
+        // Try to fetch any data to verify connection
+        const connectionTest = await fetch(BLYNK_URL + "V1")
+            .then(response => response.ok)
+            .catch(() => false);
+            
+        if (!connectionTest) {
+            consecutiveFailures++;
+            
+            // After 3 failures, show no-data state
+            if (consecutiveFailures >= 3) {
+                connectionEstablished = false;
+                showNoDataState();
+            }
+            
+            throw new Error("Connection failed");
+        }
+        
+        consecutiveFailures = 0;
+        connectionEstablished = true;
+        
         // Fetch heart rate data
         const heartRateData = await fetchBlynkData(dataConfig.heartRate.pin);
         updateValue(dataConfig.heartRate.element, heartRateData);
         addDataPoint("heartRate", heartRateData);
-        checkAlert("heartRate", heartRateData);
+        checkDeviceUsage("heartRate", heartRateData);
+        
+        // Only check alerts if we've confirmed data reception
+        if (zeroValueTracking.heartRate.hasReceivedData) {
+            checkAlert("heartRate", heartRateData);
+        }
         
         // Fetch SpO2 data
         const spo2Data = await fetchBlynkData(dataConfig.spo2.pin);
         updateValue(dataConfig.spo2.element, spo2Data);
         addDataPoint("spo2", spo2Data);
-        checkAlert("spo2", spo2Data);
+        checkDeviceUsage("spo2", spo2Data);
+        
+        // Only check alerts if we've confirmed data reception
+        if (zeroValueTracking.spo2.hasReceivedData) {
+            checkAlert("spo2", spo2Data);
+        }
         
         // Fetch temperature data
         const tempData = await fetchBlynkData(dataConfig.temperature.pin);
         updateValue(dataConfig.temperature.element, tempData);
         addDataPoint("temperature", tempData);
-        checkAlert("temperature", tempData);
+        checkDeviceUsage("temperature", tempData);
+        
+        // Only check alerts if we've confirmed data reception
+        if (zeroValueTracking.temperature.hasReceivedData) {
+            checkAlert("temperature", tempData);
+        }
         
         // Update chart
         updateChart();
@@ -385,6 +470,59 @@ async function fetchBlynkData(pin) {
     }
 }
 
+// Check if a device is being used by monitoring for consecutive zero values
+function checkDeviceUsage(metricKey, value) {
+    const tracking = zeroValueTracking[metricKey];
+    const config = dataConfig[metricKey];
+    const cardElement = document.querySelector(`.${metricKey === "heartRate" ? "heart-rate" : metricKey === "spo2" ? "oxygen" : "temperature"}`);
+    const alertElement = document.getElementById(config.alertElement);
+    
+    // First, remove the no-data state if we have any value
+    if (value !== null) {
+        cardElement.classList.remove('no-data');
+        
+        // Mark that we've received data at least once
+        tracking.hasReceivedData = true;
+    }
+    
+    // If null (no data), skip the rest of the check
+    if (value === null) return;
+    
+    // If value is zero, increment the counter
+    if (value === 0) {
+        tracking.count++;
+    } else {
+        // Reset counter if we get a non-zero value
+        tracking.count = 0;
+        
+        // If previously marked as inactive, restore
+        if (!tracking.isActive) {
+            tracking.isActive = true;
+            
+            // Remove inactive appearance if no other alerts
+            if (!cardElement.classList.contains('danger') && 
+                !cardElement.classList.contains('warning')) {
+                cardElement.classList.remove('inactive');
+            }
+        }
+    }
+    
+    // Check if we've passed the threshold for unused device
+    if (tracking.count >= tracking.threshold && tracking.isActive) {
+        tracking.isActive = false;
+        
+        // Add inactive class and show message
+        cardElement.classList.add('inactive');
+        alertElement.textContent = config.alertMessage.unused;
+        
+        // Clear other alert classes if they exist
+        cardElement.classList.remove('danger', 'warning');
+        
+        // Play alert for unused device
+        playAlertSound();
+    }
+}
+
 // Check if value triggers an alert
 function checkAlert(metricKey, value) {
     if (value === null) return;
@@ -392,6 +530,9 @@ function checkAlert(metricKey, value) {
     const config = dataConfig[metricKey];
     const cardElement = document.querySelector(`.${metricKey === "heartRate" ? "heart-rate" : metricKey === "spo2" ? "oxygen" : "temperature"}`);
     const alertElement = document.getElementById(config.alertElement);
+    
+    // Skip alert check if device is marked as not in use
+    if (!zeroValueTracking[metricKey].isActive) return;
     
     // Remove previous classes
     cardElement.classList.remove("danger", "warning");
