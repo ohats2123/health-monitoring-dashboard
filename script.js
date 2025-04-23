@@ -1,5 +1,5 @@
 // Configuration
-const BLYNK_AUTH_TOKEN = "YOUR_BLYNK_AUTH_TOKEN"; // Replace with your actual token
+const BLYNK_AUTH_TOKEN = "pPXiGs0km6L8evbBrsdcO__OwabZGFbD"; // Your Blynk auth token
 const BLYNK_SERVER = "blynk-cloud.com";
 const BLYNK_URL = `https://${BLYNK_SERVER}/${BLYNK_AUTH_TOKEN}/get/`;
 
@@ -76,7 +76,8 @@ function initChart() {
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
+            maintainAspectRatio: true, // Change to true to maintain aspect ratio
+            aspectRatio: 2.5, // Set a fixed aspect ratio
             scales: {
                 y: {
                     min: dataConfig.heartRate.min,
