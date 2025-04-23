@@ -5,54 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Health Monitoring Dashboard</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <header>
-        <h1>Healthcare IoT Monitoring System</h1>
+        <h1><i class="fas fa-heartbeat"></i> Healthcare IoT Monitoring System</h1>
         <p class="last-update">Last updated: <span id="last-update-time">Never</span></p>
     </header>
 
     <div class="container">
         <div class="card heart-rate">
             <div class="card-icon">
-                <i class="icon">❤️</i>
+                <i class="fas fa-heartbeat"></i>
             </div>
             <div class="card-content">
                 <h2>Heart Rate</h2>
                 <p class="value" id="bpm">--</p>
                 <p class="unit">BPM</p>
+                <div class="alert-message" id="bpm-alert">Value outside normal range!</div>
             </div>
+            <div class="alert-badge">!</div>
         </div>
 
         <div class="card oxygen">
             <div class="card-icon">
-                <i class="icon">🫁</i>
+                <i class="fas fa-lungs"></i>
             </div>
             <div class="card-content">
                 <h2>SpO2</h2>
                 <p class="value" id="spo2">--</p>
                 <p class="unit">%</p>
+                <div class="alert-message" id="spo2-alert">Value outside normal range!</div>
             </div>
+            <div class="alert-badge">!</div>
         </div>
 
         <div class="card temperature">
             <div class="card-icon">
-                <i class="icon">🌡️</i>
+                <i class="fas fa-thermometer-half"></i>
             </div>
             <div class="card-content">
                 <h2>Temperature</h2>
                 <p class="value" id="temperature">--</p>
                 <p class="unit">°C</p>
+                <div class="alert-message" id="temp-alert">Value outside normal range!</div>
             </div>
+            <div class="alert-badge">!</div>
         </div>
     </div>
 
     <div class="chart-container">
-        <h2>Historical Data</h2>
+        <h2><i class="fas fa-chart-line"></i> Historical Data</h2>
         <div class="chart-tabs">
-            <button class="tab-button active" data-metric="heart-rate">Heart Rate</button>
-            <button class="tab-button" data-metric="spo2">SpO2</button>
-            <button class="tab-button" data-metric="temperature">Temperature</button>
+            <button class="tab-button active" data-metric="heart-rate"><i class="fas fa-heartbeat"></i> Heart Rate</button>
+            <button class="tab-button" data-metric="spo2"><i class="fas fa-lungs"></i> SpO2</button>
+            <button class="tab-button" data-metric="temperature"><i class="fas fa-thermometer-half"></i> Temperature</button>
         </div>
         <canvas id="health-chart"></canvas>
     </div>
