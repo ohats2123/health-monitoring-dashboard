@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Health Monitoring Dashboard</title>
+    <title>Bảng Theo Dõi Sức Khỏe</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <header>
-        <h1><i class="fas fa-heartbeat"></i> Healthcare IoT Monitoring System</h1>
-        <p class="last-update">Last updated: <span id="last-update-time">Never</span></p>
+        <h1><i class="fas fa-heartbeat"></i> Hệ Thống Theo Dõi Sức Khỏe IoT</h1>
+        <p class="last-update">Cập nhật lần cuối: <span id="last-update-time">Chưa bao giờ</span></p>
     </header>
 
     <div class="container">
@@ -19,10 +19,10 @@
                 <i class="fas fa-heartbeat"></i>
             </div>
             <div class="card-content">
-                <h2>Heart Rate</h2>
+                <h2>Nhịp Tim</h2>
                 <p class="value" id="bpm">--</p>
                 <p class="unit">BPM</p>
-                <div class="alert-message" id="bpm-alert">Value outside normal range!</div>
+                <div class="alert-message" id="bpm-alert">Giá trị nằm ngoài phạm vi bình thường!</div>
             </div>
             <div class="alert-badge">!</div>
         </div>
@@ -35,7 +35,7 @@
                 <h2>SpO2</h2>
                 <p class="value" id="spo2">--</p>
                 <p class="unit">%</p>
-                <div class="alert-message" id="spo2-alert">Value outside normal range!</div>
+                <div class="alert-message" id="spo2-alert">Giá trị nằm ngoài phạm vi bình thường!</div>
             </div>
             <div class="alert-badge">!</div>
         </div>
@@ -45,23 +45,54 @@
                 <i class="fas fa-thermometer-half"></i>
             </div>
             <div class="card-content">
-                <h2>Temperature</h2>
+                <h2>Nhiệt Độ</h2>
                 <p class="value" id="temperature">--</p>
                 <p class="unit">°C</p>
-                <div class="alert-message" id="temp-alert">Value outside normal range!</div>
+                <div class="alert-message" id="temp-alert">Giá trị nằm ngoài phạm vi bình thường!</div>
             </div>
             <div class="alert-badge">!</div>
         </div>
     </div>
 
     <div class="chart-container">
-        <h2><i class="fas fa-chart-line"></i> Historical Data</h2>
+        <h2><i class="fas fa-chart-line"></i> Dữ Liệu Theo Thời Gian</h2>
         <div class="chart-tabs">
-            <button class="tab-button active" data-metric="heart-rate"><i class="fas fa-heartbeat"></i> Heart Rate</button>
+            <button class="tab-button active" data-metric="heart-rate"><i class="fas fa-heartbeat"></i> Nhịp Tim</button>
             <button class="tab-button" data-metric="spo2"><i class="fas fa-lungs"></i> SpO2</button>
-            <button class="tab-button" data-metric="temperature"><i class="fas fa-thermometer-half"></i> Temperature</button>
+            <button class="tab-button" data-metric="temperature"><i class="fas fa-thermometer-half"></i> Nhiệt Độ</button>
         </div>
         <canvas id="health-chart"></canvas>
+    </div>
+
+    <div class="chat-container">
+        <h2><i class="fas fa-question-circle"></i> Hỏi Đáp Về Dữ Liệu Sức Khỏe</h2>
+        <div class="faq-section">
+            <div class="faq-answer" id="faq-answer">
+                <div class="faq-answer-icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="faq-answer-content">
+                    Nhấn vào bất kỳ câu hỏi nào để xem thông tin chi tiết dựa trên dữ liệu sức khỏe hiện tại của bạn.
+                </div>
+            </div>
+            <div class="faq-questions">
+                <div class="faq-question" data-id="1">
+                    <i class="fas fa-heartbeat"></i> Nhịp tim của tôi hôm nay thế nào?
+                </div>
+                <div class="faq-question" data-id="2">
+                    <i class="fas fa-lungs"></i> Nồng độ oxy của tôi có bình thường không?
+                </div>
+                <div class="faq-question" data-id="3">
+                    <i class="fas fa-thermometer-half"></i> Tôi có bị sốt không?
+                </div>
+                <div class="faq-question" data-id="4">
+                    <i class="fas fa-chart-line"></i> Các chỉ số của tôi thay đổi thế nào?
+                </div>
+                <div class="faq-question" data-id="5">
+                    <i class="fas fa-exclamation-triangle"></i> Có chỉ số nào đáng lo ngại không?
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
