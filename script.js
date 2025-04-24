@@ -800,7 +800,9 @@ function generateDynamicAnswer(questionId) {
             
         case "2": // Oxygen level question
             let oxygenStatus = "";
-            if (spo2Value >= 95) {
+            if (spo2Value < 80) {
+                oxygenStatus = "ĐÂY LÀ MỨC NGUY HIỂM! Nồng độ oxy cực kỳ thấp có thể gây tổn thương não và các cơ quan khác. Cần được hỗ trợ y tế khẩn cấp ngay lập tức!";
+            } else if (spo2Value >= 95) {
                 oxygenStatus = "Đây là trong phạm vi bình thường (95-100%), cho thấy độ bão hòa oxy trong máu tốt. Phổi và hệ tuần hoàn của bạn dường như đang hoạt động bình thường.";
             } else if (spo2Value >= 90) {
                 oxygenStatus = "Đây là hơi dưới phạm vi bình thường. Mặc dù không nghiêm trọng, nhưng có thể chỉ ra các vấn đề hô hấp nhỏ. Hãy thử hít thở sâu hoặc di chuyển đến khu vực thông thoáng.";
@@ -811,7 +813,9 @@ function generateDynamicAnswer(questionId) {
             
         case "3": // Temperature question
             let tempStatus = "";
-            if (tempValue < 36) {
+            if (tempValue < 32) {
+                tempStatus = "Đây là nhiệt độ cực kỳ thấp! NGUY HIỂM - Hạ thân nhiệt nghiêm trọng có thể đe dọa tính mạng. Cần hỗ trợ y tế khẩn cấp ngay lập tức!";
+            } else if (tempValue < 36) {
                 tempStatus = "Đây là dưới nhiệt độ cơ thể bình thường. Hạ thân nhiệt nhẹ có thể xảy ra nếu bạn ở trong môi trường lạnh. Hãy cân nhắc giữ ấm và theo dõi nhiệt độ của bạn.";
             } else if (tempValue <= 37.5) {
                 tempStatus = "Đây là trong phạm vi nhiệt độ cơ thể bình thường. Cơ thể bạn đang điều hòa nhiệt độ một cách thích hợp.";
@@ -887,19 +891,23 @@ function generateDynamicAnswer(questionId) {
             // Check heart rate
             if (heartRateValue < 50) {
                 concerns.push("Nhịp tim của bạn thấp hơn đáng kể so với phạm vi bình thường (60-100 BPM). Điều này có thể chỉ ra nhịp tim chậm (nhịp chậm).");
-            } else if (heartRateValue > 120) {
+            } else if (heartRateValue > 130) {
                 concerns.push("Nhịp tim của bạn cao hơn đáng kể so với phạm vi bình thường (60-100 BPM). Điều này có thể chỉ ra nhịp tim nhanh (nhịp nhanh).");
             }
             
             // Check SpO2
-            if (spo2Value < 92) {
+            if (spo2Value < 80) {
+                concerns.push("NGUY HIỂM NGHIÊM TRỌNG! Độ bão hòa oxy của bạn đang ở mức cực kỳ thấp. Điều này có thể gây tổn thương não và các cơ quan khác. Cần được hỗ trợ y tế khẩn cấp ngay lập tức!");
+            } else if (spo2Value < 90) {
                 concerns.push("Độ bão hòa oxy của bạn dưới mức khuyến nghị (95-100%). SpO2 thấp có thể chỉ ra các vấn đề về hô hấp.");
             }
             
             // Check temperature
             if (tempValue > 38) {
                 concerns.push("Bạn hiện đang bị sốt. Nhiệt độ cơ thể trên 38°C cho thấy cơ thể bạn có thể đang chống lại nhiễm trùng.");
-            } else if (tempValue < 35.5) {
+            } else if (tempValue < 32) {
+                concerns.push("NGUY HIỂM! Nhiệt độ cơ thể của bạn cực kỳ thấp! Hạ thân nhiệt nghiêm trọng có thể đe dọa tính mạng. Cần hỗ trợ y tế khẩn cấp ngay lập tức!");
+            } else if (tempValue < 33.5) {
                 concerns.push("Nhiệt độ cơ thể của bạn dưới phạm vi bình thường. Điều này có thể chỉ ra hạ thân nhiệt hoặc vấn đề với cảm biến.");
             }
             
