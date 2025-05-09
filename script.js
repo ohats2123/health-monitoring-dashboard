@@ -1,5 +1,5 @@
 // Configuration
-const BLYNK_AUTH_TOKEN = "pPXiGs0km6L8evbBrsdcO__OwabZGFbD"; // Your Blynk auth token
+const BLYNK_AUTH_TOKEN = "rG5Oa5uZk3WumDzlMpp3OmvtlTVShKGA"; // Your Blynk auth token
 const BLYNK_SERVER = "blynk.cloud";
 const BLYNK_URL = `https://${BLYNK_SERVER}/external/api/get?token=${BLYNK_AUTH_TOKEN}&pin=`;
 
@@ -48,7 +48,7 @@ const dataConfig = {
         unit: "BPM",
         alertMessage: {
             high: "Nhịp tim quá cao! Hãy kiểm tra tình trạng bệnh nhân.",
-            low: "Nhịp tim quá thấp! Hãy kiểm tra tình trạng bệnh nhân.",
+            low: "NGUY HIỂM: Nhịp tim quá thấp! Cần được chăm sóc y tế ngay lập tức.",
             unused: "Cảm biến nhịp tim không phát hiện người dùng. Vui lòng kiểm tra vị trí thiết bị.",
             noData: "Không nhận được dữ liệu từ cảm biến nhịp tim. Hãy kiểm tra kết nối."
         }
@@ -787,7 +787,9 @@ function generateDynamicAnswer(questionId) {
     switch(questionId) {
         case "1": // Heart rate question
             let heartStatus = "";
-            if (heartRateValue < 60) {
+            if (heartRateValue < 50) {
+                heartStatus = "NGUY HIỂM: Nhịp tim của bạn quá thấp! Nhịp tim chậm nghiêm trọng (nhịp chậm) có thể gây chóng mặt, ngất xỉu, hoặc các biến chứng nghiêm trọng. Cần được hỗ trợ y tế ngay lập tức!";
+            } else if (heartRateValue < 60) {
                 heartStatus = "Nhịp tim của bạn dưới mức bình thường (60-100 BPM). Nhịp tim thấp (nhịp chậm) có thể bình thường đối với vận động viên hoặc trong khi ngủ, nhưng có thể chỉ ra vấn đề sức khỏe nếu bạn cảm thấy chóng mặt hoặc mệt mỏi.";
             } else if (heartRateValue <= 100) {
                 heartStatus = "Nhịp tim của bạn nằm trong phạm vi bình thường (60-100 BPM), điều này khỏe mạnh đối với hầu hết người trưởng thành. Nhịp tim hiện tại cho thấy hệ tim mạch của bạn đang hoạt động tốt.";
@@ -890,7 +892,7 @@ function generateDynamicAnswer(questionId) {
             
             // Check heart rate
             if (heartRateValue < 50) {
-                concerns.push("Nhịp tim của bạn thấp hơn đáng kể so với phạm vi bình thường (60-100 BPM). Điều này có thể chỉ ra nhịp tim chậm (nhịp chậm).");
+                concerns.push("NGUY HIỂM: Nhịp tim của bạn quá thấp (dưới 50 BPM)! Nhịp tim chậm nghiêm trọng có thể gây chóng mặt, ngất xỉu và các biến chứng tim mạch. Cần được hỗ trợ y tế ngay lập tức!");
             } else if (heartRateValue > 130) {
                 concerns.push("Nhịp tim của bạn cao hơn đáng kể so với phạm vi bình thường (60-100 BPM). Điều này có thể chỉ ra nhịp tim nhanh (nhịp nhanh).");
             }
